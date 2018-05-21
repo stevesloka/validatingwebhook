@@ -13,3 +13,10 @@ openssl genrsa -out server.key 2048
 openssl req -new -key server.key -out server.csr -subj "/CN=webhook.default.svc" -config server.conf
 openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 100000 -extensions v3_req -extfile server.conf
 ```
+
+## Deploy
+
+Create secret:
+```
+kubectl create secret generic webhookcerts --from-file=server.crt --from-file=server.key
+```
