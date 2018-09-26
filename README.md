@@ -49,3 +49,9 @@ Deploy the webhook deployment, service, and config:
 ```bash
 $ kubectl apply -f deployment
 ```
+
+#### IngressRoute Validation
+
+The webhook will also watch for IngressRoute changes. This example has a hard-coded "root" IngressRoute namespace which means any Root IngressRoute should only be allowed to be deployed to the "root" namespace.
+
+![IngressRoute Example](img/irexample.png)

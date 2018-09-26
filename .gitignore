@@ -3,3 +3,4 @@
 *.srl
 *.csr
 main
+vendor/

@@ -9,6 +9,7 @@ import (
 
 	"encoding/json"
 
+	ingressroutev1 "github.com/heptio/contour/apis/contour/v1beta1"
 	"k8s.io/api/admission/v1beta1"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -68,6 +69,19 @@ func handler(w http.ResponseWriter, r *http.Request) {
 					Message: "Ah ah ahhhh, you can't do this! [STEVE]",
 				}
 				break
+			} else {
+				fmt.Println("Container is a-ok!")
+			}
+		}
+	} else if ar.Request.Kind.Kind == "IngressRoute" {
+		ir := ingressroutev1.IngressRoute{}
+		json.Unmarshal(ar.Request.Object.Raw, &ir)
+
+		if ir.GetNamespace() != "root" && ir.GetNamespace() != "" {
+			fmt.Println("BLOCK ingressroute, can't run outside root namespace...")
+			admitResponse.Response.Allowed = false
+			admitResponse.Response.Result = &metav1.Status{
+				Message: "Attempt to deploy to non-root namespace",
 			}
 		}
 	}
