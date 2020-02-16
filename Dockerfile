@@ -1,9 +1,9 @@
-FROM golang:1.10.1
-WORKDIR /go/src/github.com/stevesloka/validatingwebhook
+FROM golang:1.13.7
+WORKDIR /webhook
 
-RUN go get github.com/golang/dep/cmd/dep
-COPY Gopkg.toml Gopkg.lock ./
-RUN dep ensure -v -vendor-only
+ENV GOPROXY=https://proxy.golang.org
+COPY go.mod go.sum /webhook/
+RUN go mod download
 
 COPY cmd cmd
 RUN CGO_ENABLED=0 GOOS=linux go install -ldflags="-w -s" -v github.com/stevesloka/validatingwebhook/cmd/webhook

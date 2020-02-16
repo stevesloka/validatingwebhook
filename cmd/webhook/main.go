@@ -9,9 +9,10 @@ import (
 
 	"encoding/json"
 
-	ingressroutev1 "github.com/heptio/contour/apis/contour/v1beta1"
+	ingressroutev1 "github.com/projectcontour/contour/apis/contour/v1beta1"
+	projectcontour "github.com/projectcontour/contour/apis/projectcontour/v1"
 	"k8s.io/api/admission/v1beta1"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
@@ -79,6 +80,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 		if ir.GetNamespace() != "root" && ir.GetNamespace() != "" {
 			fmt.Println("BLOCK ingressroute, can't run outside root namespace...")
+			admitResponse.Response.Allowed = false
+			admitResponse.Response.Result = &metav1.Status{
+				Message: "Attempt to deploy to non-root namespace",
+			}
+		}
+	} else if ar.Request.Kind.Kind == "HTTPProxy" {
+		ir := projectcontour.HTTPProxy{}
+		json.Unmarshal(ar.Request.Object.Raw, &ir)
+
+		if ir.GetNamespace() != "root" && ir.GetNamespace() != "" {
+			fmt.Println("BLOCK httpproxy, can't run outside root namespace...")
 			admitResponse.Response.Allowed = false
 			admitResponse.Response.Result = &metav1.Status{
 				Message: "Attempt to deploy to non-root namespace",

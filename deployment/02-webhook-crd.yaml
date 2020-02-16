@@ -7,14 +7,17 @@ webhooks:
     rules:
       - apiGroups:
           - contour.heptio.com
+          - projectcontor.io
         apiVersions:
           - v1beta1
+          - v1
         operations:
           - CREATE
           - UPDATE
           - DELETE
         resources:
           - ingressroutes
+          - httpproxies
     failurePolicy: Ignore
     clientConfig:
       service: 
